@@ -18,7 +18,7 @@ const urlToBlob = async (url: string): Promise<Blob> => {
         return blob;
     } catch (error) {
         console.error("Video Download Error:", error);
-        throw new Error("Could not download video data. The video link may have expired or is blocked by CORS.");
+        throw new Error("Could not download video data. The video link may have expired or is blocked by CORS. Ensure your API Key allows access.");
     }
 };
 
@@ -90,7 +90,7 @@ export const publishingService = {
                 const errText = await initResponse.text();
                 // Check specifically for CORS-like issues or origin issues
                 if (initResponse.status === 403 || initResponse.status === 400) {
-                     throw new Error(`YouTube Session Init Failed (${initResponse.status}). Ensure 'Authorized JavaScript origins' in GCP Console matches your domain. Details: ${errText}`);
+                     throw new Error(`YouTube Session Init Failed (${initResponse.status}). IMPORTANT: Ensure your Vercel domain (and localhost) are added to 'Authorized JavaScript origins' in your Google Cloud Console OAuth Client settings. Details: ${errText}`);
                 }
                 throw new Error(`YouTube Init Error: ${errText}`);
             }
@@ -126,7 +126,7 @@ export const publishingService = {
             
             // Provide specific advice for common errors
             if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                throw new Error("Network Error: This is usually a CORS block. Please add your current domain (e.g., http://localhost:xxxx) to 'Authorized JavaScript origins' in your Google Cloud Console OAuth Client settings.");
+                throw new Error("Network Error (CORS): Please add your Vercel/Localhost URL to 'Authorized JavaScript origins' in Google Cloud Console.");
             }
             
             throw error;
